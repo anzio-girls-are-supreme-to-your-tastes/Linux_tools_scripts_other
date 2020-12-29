@@ -1,0 +1,42 @@
+--- LockScreenUi.qml.bak	2020-12-29 05:57:46.793308090 -0600
++++ LockScreenUi.qml	2020-12-29 06:10:42.973717179 -0600
+@@ -32,6 +32,18 @@
+ 
+     colorGroup: PlasmaCore.Theme.ComplementaryColorGroup
+ 
++    function performOperation(what) {
++        var service = dataEngine.serviceForSource("PowerDevil");
++        var operation = service.operationDescription(what);
++        service.startOperationCall(operation);
++    }
++
++    PlasmaCore.DataSource {
++      id: dataEngine
++      engine: "powermanagement"
++      connectedSources: ["PowerDevil"]
++    }
++
+     Connections {
+         target: authenticator
+         onFailed: {
+@@ -108,6 +120,8 @@
+             }
+         }
+         Keys.onPressed: {
++            if (event.key == 16908292) performOperation("suspendToRam")
++            if (event.key == 16777399) performOperation("suspendToRam")
+             uiVisible = true;
+             event.accepted = false;
+         }
+@@ -247,6 +261,11 @@
+                         onClicked: mainStack.push(switchSessionPage)
+                         // the current session isn't listed in the model, hence a check for greater than zero, not one
+                         visible: (sessionsModel.count > 0 || sessionsModel.canStartNewSession) && sessionsModel.canSwitchUser
++                    },
++                    ActionButton {
++                        text: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Suspend")
++                        iconSource: "system-suspend"
++                        onClicked: performOperation("suspendToRam")
+                     }
+                 ]
+ 
